@@ -12,6 +12,7 @@ const io = require("socket.io")(http, {
     origin: "*",
     methods: ["GET", "POST"],
   },
+  path: "/"
 });
 
 // Cliente
@@ -33,10 +34,12 @@ app.get("/", (req, res) => {
   res.send("ASCP framework");
 });
 
+const cors = require("cors")
 // Permitimos JSON
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
+app.use(cors);
 
 app.post("/test", (req, res) => {
   console.log("Got body:", req.body);
@@ -78,6 +81,9 @@ io.on("connection", (socket) => {
     console.log(socket.id + " " + JSON.stringify(ascp_msg));
     mensajes.push(ascp_msg);
     io.emit("Mensaje ASCP", ascp_msg);
+    if(ascp_msg.function === 1) {
+      io.emit("Mensaje ASC", ascp_msg);
+    }
   });
 });
 
